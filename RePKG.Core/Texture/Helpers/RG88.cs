@@ -1,8 +1,8 @@
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace RePKG.Core.Texture.Helpers
 {
@@ -21,6 +21,7 @@ namespace RePKG.Core.Texture.Helpers
             R = r;
             G = g;
         }
+
         public ushort Rg
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -33,7 +34,7 @@ namespace RePKG.Core.Texture.Helpers
         public uint PackedValue
         {
             get => Rg;
-            set => Rg = (ushort) value;
+            set => Rg = (ushort)value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -136,7 +137,7 @@ namespace RePKG.Core.Texture.Helpers
 
         public static byte DownScaleFrom16BitTo8Bit(ushort component)
         {
-            return (byte) (component * byte.MaxValue + 32895 >> 16);
+            return (byte)(component * byte.MaxValue + 32895 >> 16);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -170,8 +171,8 @@ namespace RePKG.Core.Texture.Helpers
             vector += Half;
             vector = Vector4.Clamp(vector, Vector4.Zero, MaxBytes);
 
-            R = (byte) vector.X;
-            G = (byte) vector.Y;
+            R = (byte)vector.X;
+            G = (byte)vector.Y;
         }
     }
 }

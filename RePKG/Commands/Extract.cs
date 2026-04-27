@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.CommandLine;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Nodes;
-using RePKG.Core.Package;
-using RePKG.Core.Texture;
+﻿using RePKG.Core.Package;
 using RePKG.Core.Package.Enums;
 using RePKG.Core.Package.Interfaces;
+using RePKG.Core.Texture;
+using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using System.Text.Json.Nodes;
 
 namespace RePKG.Commands
 {
@@ -319,17 +315,17 @@ namespace RePKG.Commands
 
         public static Command BuildCommand()
         {
-            var inputArg  = new Argument<string>("input") { Description = "Path to file/directory" };
+            var inputArg = new Argument<string>("input") { Description = "Path to file/directory" };
             var outputOpt = new Option<string>("--output", ["-o"]) { Description = "Output directory", DefaultValueFactory = _ => "./output" };
             var ignoreOpt = new Option<string?>("--ignoreexts", ["-i"]) { Description = "Don't extract files with these extensions (comma-separated)" };
-            var onlyOpt   = new Option<string?>("--onlyexts", ["-e"]) { Description = "Only extract files with these extensions (comma-separated)" };
-            var texOpt    = new Option<bool>("--tex", ["-t"]) { Description = "Convert all tex files into images from specified directory" };
-            var sdirOpt   = new Option<bool>("--singledir", ["-s"]) { Description = "Put all extracted files in one directory" };
-            var recurOpt  = new Option<bool>("--recursive", ["-r"]) { Description = "Recursive search in all subfolders" };
-            var copyOpt   = new Option<bool>("--copyproject", ["-c"]) { Description = "Copy project.json and preview.jpg into output directory" };
-            var nameOpt   = new Option<bool>("--usename", ["-n"]) { Description = "Use project.json title as subfolder name instead of id" };
-            var noTexOpt  = new Option<bool>("--no-tex-convert") { Description = "Don't convert TEX files into images while extracting PKG" };
-            var overOpt   = new Option<bool>("--overwrite") { Description = "Overwrite all existing files" };
+            var onlyOpt = new Option<string?>("--onlyexts", ["-e"]) { Description = "Only extract files with these extensions (comma-separated)" };
+            var texOpt = new Option<bool>("--tex", ["-t"]) { Description = "Convert all tex files into images from specified directory" };
+            var sdirOpt = new Option<bool>("--singledir", ["-s"]) { Description = "Put all extracted files in one directory" };
+            var recurOpt = new Option<bool>("--recursive", ["-r"]) { Description = "Recursive search in all subfolders" };
+            var copyOpt = new Option<bool>("--copyproject", ["-c"]) { Description = "Copy project.json and preview.jpg into output directory" };
+            var nameOpt = new Option<bool>("--usename", ["-n"]) { Description = "Use project.json title as subfolder name instead of id" };
+            var noTexOpt = new Option<bool>("--no-tex-convert") { Description = "Don't convert TEX files into images while extracting PKG" };
+            var overOpt = new Option<bool>("--overwrite") { Description = "Overwrite all existing files" };
 
             var cmd = new Command("extract", "Extract PKG / Convert TEX into image")
             {
@@ -348,17 +344,17 @@ namespace RePKG.Commands
 
             cmd.SetAction(pr => Action(new ExtractOptions
             {
-                Input           = pr.GetValue(inputArg)!,
+                Input = pr.GetValue(inputArg)!,
                 OutputDirectory = pr.GetValue(outputOpt) ?? "./output",
-                IgnoreExts      = pr.GetValue(ignoreOpt),
-                OnlyExts        = pr.GetValue(onlyOpt),
-                TexDirectory    = pr.GetValue(texOpt),
-                SingleDir       = pr.GetValue(sdirOpt),
-                Recursive       = pr.GetValue(recurOpt),
-                CopyProject     = pr.GetValue(copyOpt),
-                UseName         = pr.GetValue(nameOpt),
-                NoTexConvert    = pr.GetValue(noTexOpt),
-                Overwrite       = pr.GetValue(overOpt),
+                IgnoreExts = pr.GetValue(ignoreOpt),
+                OnlyExts = pr.GetValue(onlyOpt),
+                TexDirectory = pr.GetValue(texOpt),
+                SingleDir = pr.GetValue(sdirOpt),
+                Recursive = pr.GetValue(recurOpt),
+                CopyProject = pr.GetValue(copyOpt),
+                UseName = pr.GetValue(nameOpt),
+                NoTexConvert = pr.GetValue(noTexOpt),
+                Overwrite = pr.GetValue(overOpt),
             }));
 
             return cmd;

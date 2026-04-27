@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using RePKG.Core.Exceptions;
-using RePKG.Core.Texture;
 
 namespace RePKG.Core.Texture
 {
@@ -39,7 +36,7 @@ namespace RePKG.Core.Texture
         {
             ArgumentNullException.ThrowIfNull(reader);
 
-            var tex = new Tex {Magic1 = reader.ReadNString(maxLength: 16)};
+            var tex = new Tex { Magic1 = reader.ReadNString(maxLength: 16) };
 
             if (tex.Magic1 != "TEXV0005")
                 throw new UnknownMagicException(nameof(TexReader), nameof(tex.Magic1), tex.Magic1);

@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using RePKG.Core.Exceptions;
-using RePKG.Core.Texture;
 
 namespace RePKG.Core.Texture
 {
@@ -10,7 +7,7 @@ namespace RePKG.Core.Texture
         public ITexFrameInfoContainer ReadFrom(BinaryReader reader)
         {
             ArgumentNullException.ThrowIfNull(reader);
-            
+
             var container = new TexFrameInfoContainer
             {
                 Magic = reader.ReadNString(maxLength: 16)
@@ -54,7 +51,7 @@ namespace RePKG.Core.Texture
                         });
                     }
                     break;
-                
+
                 case "TEXS0002":
                 case "TEXS0003":
                     for (var i = 0; i < frameCount; i++)
@@ -72,7 +69,7 @@ namespace RePKG.Core.Texture
                         });
                     }
                     break;
-                    
+
                 default:
                     throw new UnknownMagicException(nameof(TexFrameInfoContainerReader), container.Magic);
             }
@@ -82,8 +79,8 @@ namespace RePKG.Core.Texture
             if (container.GifWidth == 0 ||
                 container.GifHeight == 0)
             {
-                container.GifWidth = (int) container.Frames[0].Width;
-                container.GifHeight = (int) container.Frames[0].Height;
+                container.GifWidth = (int)container.Frames[0].Width;
+                container.GifHeight = (int)container.Frames[0].Height;
             }
 
             return container;

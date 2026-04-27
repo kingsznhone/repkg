@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using RePKG.Core.Exceptions;
 using RePKG.Core.Texture.Interfaces;
 
@@ -23,20 +21,20 @@ namespace RePKG.Core.Texture
         {
             ArgumentNullException.ThrowIfNull(reader);
             ArgumentNullException.ThrowIfNull(container);
-            
+
             if (!texFormat.IsValid())
                 throw new EnumNotValidException<TexFormat>(texFormat);
 
             var mipmapCount = reader.ReadInt32();
-            
+
             if (mipmapCount > Constants.MaximumMipmapCount)
                 throw new UnsafeTexException(
                     $"Mipmap count exceeds limit: {mipmapCount}/{Constants.MaximumMipmapCount}");
-            
+
             var readFunction = PickMipmapReader(container.ImageContainerVersion);
             var format = TexMipmapFormatGetter.GetFormatForTex(container.ImageFormat, texFormat);
             var image = new TexImage();
-            
+
             for (var i = 0; i < mipmapCount; i++)
             {
                 var mipmap = readFunction(reader);
@@ -72,24 +70,25 @@ namespace RePKG.Core.Texture
                 Bytes = ReadBytes(reader)
             };
         }
+
         private TexMipmap ReadMipmapV4(BinaryReader reader)
         {
             /**FIXME
-             * The role of the following param* parameters cannot be confirmed, 
+             * The role of the following param* parameters cannot be confirmed,
              * it may be a parameter used in the built-in display of the wallpaper editor and does not need to be processed
              */
             var param1 = reader.ReadInt32();
-            if(param1 != 1)
+            if (param1 != 1)
             {
                 throw new UnsafeTexException($"ReadMipmapV4 unknow param1 :{param1}");
             }
-            var param2= reader.ReadInt32();
+            var param2 = reader.ReadInt32();
             if (param2 != 2)
             {
                 throw new UnsafeTexException($"ReadMipmapV4 unknow param2 :{param2}");
             }
             var conditionJson = reader.ReadNString();
-            
+
             var param3 = reader.ReadInt32();
             if (param3 != 1)
             {
@@ -104,10 +103,11 @@ namespace RePKG.Core.Texture
                 Bytes = ReadBytes(reader)
             };
         }
+
         private byte[] ReadBytes(BinaryReader reader)
         {
             var byteCount = reader.ReadInt32();
-            
+
             if (reader.BaseStream.Position + byteCount > reader.BaseStream.Length)
                 throw new UnsafeTexException("Detected invalid mipmap byte count - exceeds stream length");
 

@@ -1,4 +1,3 @@
-using System;
 using K4os.Compression.LZ4;
 using RePKG.Core.Texture.Helpers;
 using RePKG.Core.Texture.Interfaces;
@@ -26,10 +25,12 @@ namespace RePKG.Core.Texture
                     mipmap.Bytes = DXT.DecompressImage(mipmap.Width, mipmap.Height, mipmap.Bytes, DXTFlags.DXT5);
                     mipmap.Format = MipmapFormat.RGBA8888;
                     break;
+
                 case MipmapFormat.CompressedDXT3:
                     mipmap.Bytes = DXT.DecompressImage(mipmap.Width, mipmap.Height, mipmap.Bytes, DXTFlags.DXT3);
                     mipmap.Format = MipmapFormat.RGBA8888;
                     break;
+
                 case MipmapFormat.CompressedDXT1:
                     mipmap.Bytes = DXT.DecompressImage(mipmap.Width, mipmap.Height, mipmap.Bytes, DXTFlags.DXT1);
                     mipmap.Format = MipmapFormat.RGBA8888;

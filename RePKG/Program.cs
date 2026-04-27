@@ -1,7 +1,6 @@
-using System;
+using RePKG.Commands;
 using System.CommandLine;
 using System.CommandLine.Help;
-using RePKG.Commands;
 
 namespace RePKG
 {

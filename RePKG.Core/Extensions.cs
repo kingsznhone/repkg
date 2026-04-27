@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using System.Text;
 
 namespace RePKG.Core
@@ -28,7 +26,7 @@ namespace RePKG.Core
             ArgumentNullException.ThrowIfNull(input);
 
             writer.Write(Encoding.UTF8.GetBytes(input));
-            writer.Write((byte) 0);
+            writer.Write((byte)0);
         }
 
         public static string ReadStringI32Size(this BinaryReader reader, int maxLength = -1)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace RePKG
+﻿namespace RePKG
 {
     public static class Extensions
     {
