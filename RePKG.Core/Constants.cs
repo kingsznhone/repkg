@@ -1,4 +1,4 @@
-namespace RePKG.Application
+namespace RePKG.Core
 {
     internal static class Constants
     {

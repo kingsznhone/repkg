@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using RePKG.Application.Exceptions;
+using RePKG.Core.Exceptions;
 using RePKG.Core.Texture;
 
-namespace RePKG.Application.Texture
+namespace RePKG.Core.Texture
 {
     public class TexImageReader : ITexImageReader
     {

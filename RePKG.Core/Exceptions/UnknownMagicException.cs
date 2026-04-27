@@ -1,6 +1,6 @@
 using System;
 
-namespace RePKG.Application.Exceptions
+namespace RePKG.Core.Exceptions
 {
     /// <summary>
     /// Thrown on magic values that have not been tested before

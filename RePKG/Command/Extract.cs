@@ -4,14 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
 using CommandLine;
-using Newtonsoft.Json;
-using RePKG.Application.Package;
-using RePKG.Application.Texture;
 using RePKG.Core.Package;
+using RePKG.Core.Texture;
 using RePKG.Core.Package.Enums;
 using RePKG.Core.Package.Interfaces;
-using RePKG.Core.Texture;
 
 namespace RePKG.Command
 {
@@ -186,7 +184,7 @@ namespace RePKG.Command
             Console.WriteLine($"\r\n### Extracting package: {file.FullName}");
 
             // Load package
-            Package package;
+            Core.Package.Package package;
 
             using (var reader = new BinaryReader(file.Open(FileMode.Open, FileAccess.Read, FileShare.Read)))
             {
@@ -310,9 +308,12 @@ namespace RePKG.Command
             if (projectJson.Length == 0 || !projectJson[0].Exists)
                 return;
 
-            dynamic json = JsonConvert.DeserializeObject(File.ReadAllText(projectJson[0].FullName));
-            title = json.title;
-            preview = json.preview;
+            var json = JsonNode.Parse(File.ReadAllText(projectJson[0].FullName));
+            if (json is JsonObject obj)
+            {
+                title = obj["title"]?.GetValue<string>() ?? title;
+                preview = obj["preview"]?.GetValue<string>() ?? preview;
+            }
         }
 
         private static void GetProjectFolderNameAndPreviewImage(FileInfo packageFile, string defaultProjectName,
@@ -381,10 +382,10 @@ namespace RePKG.Command
         public string OutputDirectory { get; set; }
 
         [Option('i', "ignoreexts", HelpText =
-            "Don't extract files with specified extensions (delimited by comma \",\")")]
+            "Don't extract files with specified extensions (delimited by comma \",\"")]
         public string IgnoreExts { get; set; }
 
-        [Option('e', "onlyexts", HelpText = "Only extract files with specified extensions (delimited by comma \",\")")]
+        [Option('e', "onlyexts", HelpText = "Only extract files with specified extensions (delimited by comma \",\"")]
         public string OnlyExts { get; set; }
 
         [Option('t', "tex", HelpText = "Convert all tex files into images from specified directory in input")]

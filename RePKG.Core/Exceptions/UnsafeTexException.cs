@@ -1,6 +1,6 @@
 using System;
 
-namespace RePKG.Application.Exceptions
+namespace RePKG.Core.Exceptions
 {
     /// <summary>
     /// Thrown on unorganic values.

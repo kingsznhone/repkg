@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using RePKG.Core.Texture;
 
-namespace RePKG.Application.Texture
+namespace RePKG.Core.Texture
 {
     public class TexHeaderWriter : ITexHeaderWriter
     {

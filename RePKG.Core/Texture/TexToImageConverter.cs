@@ -1,14 +1,14 @@
 using System;
 using System.IO;
 using System.Text;
-using RePKG.Application.Texture.Helpers;
+using RePKG.Core.Texture.Helpers;
 using RePKG.Core.Texture;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace RePKG.Application.Texture
+namespace RePKG.Core.Texture
 {
     public class TexToImageConverter
     {

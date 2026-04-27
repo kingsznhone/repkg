@@ -1,9 +1,9 @@
 using System;
 using K4os.Compression.LZ4;
-using RePKG.Application.Texture.Helpers;
+using RePKG.Core.Texture.Helpers;
 using RePKG.Core.Texture;
 
-namespace RePKG.Application.Texture
+namespace RePKG.Core.Texture
 {
     public class TexMipmapDecompressor : ITexMipmapDecompressor
     {

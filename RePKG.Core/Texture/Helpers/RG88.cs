@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace RePKG.Application.Texture.Helpers
+namespace RePKG.Core.Texture.Helpers
 {
     [StructLayout(LayoutKind.Sequential)]
     internal struct RG88 : IPixel<RG88>, IPackedVector<uint>

@@ -2,7 +2,7 @@ using System;
 using K4os.Compression.LZ4;
 using RePKG.Core.Texture;
 
-namespace RePKG.Application.Texture
+namespace RePKG.Core.Texture
 {
     public class TexMipmapCompressor : ITexMipmapCompressor
     {

@@ -23,7 +23,7 @@
 
 using RePKG.Core.Texture;
 
-namespace RePKG.Application.Texture.Helpers
+namespace RePKG.Core.Texture.Helpers
 {
     public static class DXT
     {

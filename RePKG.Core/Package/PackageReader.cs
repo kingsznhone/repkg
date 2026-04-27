@@ -4,7 +4,7 @@ using System.IO;
 using RePKG.Core.Package;
 using RePKG.Core.Package.Interfaces;
 
-namespace RePKG.Application.Package
+namespace RePKG.Core.Package
 {
     public class PackageReader : IPackageReader
     {

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Nodes;
 using CommandLine;
-using Newtonsoft.Json;
-using RePKG.Application.Package;
 using RePKG.Core.Package;
 using RePKG.Core.Package.Interfaces;
 
@@ -92,25 +91,26 @@ namespace RePKG.Command
 
             Console.WriteLine($"\r\n### Package info: {name}");
 
-            if (projectInfo != null && _projectInfoToPrint?.Length > 0)
+            if (projectInfo is JsonObject projectJson && _projectInfoToPrint?.Length > 0)
             {
                 IEnumerable<string> projectInfoEnumerator;
 
                 if (_projectInfoToPrint.Length == 1 && _projectInfoToPrint[0] == "*")
-                    projectInfoEnumerator = Helper.GetPropertyKeysForDynamic(projectInfo);
+                    projectInfoEnumerator = Helper.GetPropertyKeysForDynamic(projectJson);
                 else
                 {
-                    projectInfoEnumerator = Helper.GetPropertyKeysForDynamic(projectInfo);
+                    projectInfoEnumerator = Helper.GetPropertyKeysForDynamic(projectJson);
                     projectInfoEnumerator = projectInfoEnumerator.Where(x =>
                         _projectInfoToPrint.Contains(x, StringComparer.OrdinalIgnoreCase));
                 }
 
                 foreach (var key in projectInfoEnumerator)
                 {
-                    if (projectInfo[key] == null)
+                    var value = projectJson[key];
+                    if (value == null)
                         Console.WriteLine(key + @": null");
                     else
-                        Console.WriteLine(key + @": " + projectInfo[key].ToString());
+                        Console.WriteLine(key + @": " + value.ToString());
                 }
             }
 
@@ -118,7 +118,7 @@ namespace RePKG.Command
             {
                 Console.WriteLine("Package entries:");
 
-                Package package;
+                Core.Package.Package package;
                 using (var reader = new BinaryReader(file.Open(FileMode.Open, FileAccess.Read, FileShare.Read)))
                 {
                     package = _reader.ReadFrom(reader);
@@ -149,7 +149,7 @@ namespace RePKG.Command
         {
         }
 
-        private static dynamic GetProjectInfo(FileInfo packageFile)
+        private static JsonNode? GetProjectInfo(FileInfo packageFile)
         {
             var directory = packageFile.Directory;
             if (directory == null)
@@ -159,19 +159,23 @@ namespace RePKG.Command
             if (projectJson.Length == 0 || !projectJson[0].Exists)
                 return null;
 
-            return JsonConvert.DeserializeObject(File.ReadAllText(projectJson[0].FullName));
+            return JsonNode.Parse(File.ReadAllText(projectJson[0].FullName));
         }
 
-        private static bool MatchesFilter(dynamic project)
+        private static bool MatchesFilter(JsonNode? project)
         {
             if (project == null)
                 return true;
 
             if (!string.IsNullOrEmpty(_options.TitleFilter))
             {
-                var title = (string) project.title;
-                if (!title.Contains(_options.TitleFilter, StringComparison.OrdinalIgnoreCase))
-                    return false;
+                var titleNode = project["title"];
+                if (titleNode != null)
+                {
+                    var title = titleNode.GetValue<string>();
+                    if (!title.Contains(_options.TitleFilter, StringComparison.OrdinalIgnoreCase))
+                        return false;
+                }
             }
 
             return true;

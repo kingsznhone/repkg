@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
-using RePKG.Application.Texture;
 using RePKG.Core.Texture;
 
 namespace RePKG.Tests

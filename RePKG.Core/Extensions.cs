@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace RePKG.Application
+namespace RePKG.Core
 {
     internal static class Extensions
     {

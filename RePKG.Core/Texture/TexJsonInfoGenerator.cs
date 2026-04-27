@@ -1,9 +1,9 @@
 using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using RePKG.Core.Texture;
 
-namespace RePKG.Application.Texture
+namespace RePKG.Core.Texture
 {
     public class TexJsonInfoGenerator : ITexJsonInfoGenerator
     {
@@ -11,7 +11,7 @@ namespace RePKG.Application.Texture
         {
             if (tex == null) throw new ArgumentNullException(nameof(tex));
 
-            var json = new JObject
+            var json = new JsonObject
             {
                 ["bleedtransparentcolors"] = true,
                 ["clampuvs"] = tex.HasFlag(TexFlags.ClampUVs),
@@ -27,9 +27,9 @@ namespace RePKG.Application.Texture
                 if (tex.FrameInfoContainer == null)
                     throw new InvalidOperationException("TEX is animated but doesn't have frame info container");
                 
-                json["spritesheetsequences"] = new JArray
+                json["spritesheetsequences"] = new JsonArray
                 {
-                    new JObject
+                    new JsonObject
                     {
                         ["duration"] = 1, // not sure what this value is used for
                         ["frames"] = tex.FrameInfoContainer.Frames.Count,
@@ -39,7 +39,7 @@ namespace RePKG.Application.Texture
                 };
             }
 
-            return JsonConvert.SerializeObject(json, Formatting.Indented);
+            return json.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
         }
 
         private static bool NumberIsPowerOfTwo(int n)
