@@ -1,6 +1,7 @@
 using System;
-using CommandLine;
-using RePKG.Command;
+using System.CommandLine;
+using System.CommandLine.Help;
+using RePKG.Commands;
 
 namespace RePKG
 {
@@ -8,43 +9,22 @@ namespace RePKG
     {
         public static bool Closing;
 
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
             Console.CancelKeyPress += Cancel;
 
-            if (args.Length > 0 && args[0] == "interactive")
-            {
-                InteractiveConsole();
-                return;
-            }
-
-            Parser.Default.ParseArguments<ExtractOptions, InfoOptions>(args)
-                .WithParsed<ExtractOptions>(Extract.Action)
-                .WithParsed<InfoOptions>(Info.Action);
+            var root = new RootCommand("RePKG - Wallpaper Engine package tool");
+            root.Add(Extract.BuildCommand());
+            root.Add(Info.BuildCommand());
+            root.Action = new HelpAction();
+            return root.Parse(args).Invoke();
         }
 
-        private static void Cancel(object sender, ConsoleCancelEventArgs e)
+        private static void Cancel(object? sender, ConsoleCancelEventArgs e)
         {
             Closing = true;
             e.Cancel = true;
             Console.WriteLine("Terminating...");
-        }
-
-        private static void InteractiveConsole()
-        {
-            Console.WriteLine("RePKG started in interactive mode. You can now type commands");
-            Console.WriteLine("Type \"help\" for commands");
-            
-            string line;
-
-            while (!string.IsNullOrEmpty(line = Console.ReadLine()))
-            {
-                var interactiveArgs = line.SplitArguments();
-
-                Parser.Default.ParseArguments<ExtractOptions, InfoOptions>(interactiveArgs)
-                    .WithParsed<ExtractOptions>(Extract.Action)
-                    .WithParsed<InfoOptions>(Info.Action);
-            }
         }
     }
 }

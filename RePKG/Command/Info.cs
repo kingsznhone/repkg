@@ -1,151 +1,118 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
-using CommandLine;
 using RePKG.Core.Package;
 using RePKG.Core.Package.Interfaces;
 
-namespace RePKG.Command
+namespace RePKG.Commands
 {
-    public class Info
+    public static class Info
     {
-        private static InfoOptions _options;
-        private static string[] _projectInfoToPrint;
+        private static readonly IPackageReader _reader = new PackageReader();
 
-        private static readonly IPackageReader _reader;
-
-        static Info()
+        public static void Action(InfoOptions o)
         {
-            _reader = new PackageReader();
-        }
+            var projectInfoToPrint = string.IsNullOrEmpty(o.ProjectInfo) ? null : o.ProjectInfo.Split(',');
 
-        public static void Action(InfoOptions options)
-        {
-            _options = options;
-
-            if (string.IsNullOrEmpty(_options.ProjectInfo))
-                _projectInfoToPrint = null;
-            else
-                _projectInfoToPrint = _options.ProjectInfo.Split(',');
-
-            var fileInfo = new FileInfo(options.Input);
-            var directoryInfo = new DirectoryInfo(options.Input);
+            var fileInfo = new FileInfo(o.Input);
+            var directoryInfo = new DirectoryInfo(o.Input);
 
             if (!fileInfo.Exists)
             {
                 if (directoryInfo.Exists)
                 {
-                    if (_options.TexDirectory)
-                        InfoTexDirectory(directoryInfo);
+                    if (o.TexDirectory)
+                        InfoTexDirectory(o, directoryInfo);
                     else
-                        InfoPkgDirectory(directoryInfo);
+                        InfoPkgDirectory(o, directoryInfo, projectInfoToPrint);
 
                     Console.WriteLine("Done");
                     return;
                 }
 
-                Console.WriteLine("Input file/directory doesn't exist!");
-                Console.WriteLine(options.Input);
+                Console.WriteLine("Input file/directory doesn''t exist!");
+                Console.WriteLine(o.Input);
                 return;
             }
 
-            InfoFile(fileInfo);
+            InfoFile(o, fileInfo, projectInfoToPrint);
             Console.WriteLine("Done");
         }
 
-        private static void InfoPkgDirectory(DirectoryInfo directoryInfo)
+        private static void InfoPkgDirectory(InfoOptions o, DirectoryInfo directoryInfo, string[]? projectInfoToPrint)
         {
-            var rootDirectoryLength = directoryInfo.FullName.Length;
+            var rootLen = directoryInfo.FullName.Length;
 
             foreach (var directory in directoryInfo.EnumerateDirectories())
             {
                 foreach (var file in directory.EnumerateFiles("*.pkg"))
-                {
-                    InfoPkg(file, file.FullName.Substring(rootDirectoryLength));
-                }
+                    InfoPkg(o, file, file.FullName.Substring(rootLen), projectInfoToPrint);
             }
         }
 
-        private static void InfoTexDirectory(DirectoryInfo directoryInfo)
+        private static void InfoTexDirectory(InfoOptions o, DirectoryInfo directoryInfo)
         {
         }
 
-        private static void InfoFile(FileInfo file)
+        private static void InfoFile(InfoOptions o, FileInfo file, string[]? projectInfoToPrint)
         {
             if (file.Extension.Equals(".pkg", StringComparison.OrdinalIgnoreCase))
-                InfoPkg(file, Path.GetFullPath(file.Name));
+                InfoPkg(o, file, Path.GetFullPath(file.Name), projectInfoToPrint);
             else if (file.Extension.Equals(".tex", StringComparison.OrdinalIgnoreCase))
-                InfoTex(file);
+                InfoTex(o, file);
             else
                 Console.WriteLine($"Unrecognized file extension: {file.Extension}");
         }
 
-        private static void InfoPkg(FileInfo file, string name)
+        private static void InfoPkg(InfoOptions o, FileInfo file, string name, string[]? projectInfoToPrint)
         {
             var projectInfo = GetProjectInfo(file);
 
-            if (!MatchesFilter(projectInfo))
+            if (!MatchesFilter(o, projectInfo))
                 return;
 
             Console.WriteLine($"\r\n### Package info: {name}");
 
-            if (projectInfo is JsonObject projectJson && _projectInfoToPrint?.Length > 0)
+            if (projectInfo is JsonObject projectJson && projectInfoToPrint?.Length > 0)
             {
-                IEnumerable<string> projectInfoEnumerator;
+                var keys = Helper.GetPropertyKeysForDynamic(projectJson);
 
-                if (_projectInfoToPrint.Length == 1 && _projectInfoToPrint[0] == "*")
-                    projectInfoEnumerator = Helper.GetPropertyKeysForDynamic(projectJson);
-                else
-                {
-                    projectInfoEnumerator = Helper.GetPropertyKeysForDynamic(projectJson);
-                    projectInfoEnumerator = projectInfoEnumerator.Where(x =>
-                        _projectInfoToPrint.Contains(x, StringComparer.OrdinalIgnoreCase));
-                }
+                if (!(projectInfoToPrint.Length == 1 && projectInfoToPrint[0] == "*"))
+                    keys = keys.Where(x => projectInfoToPrint.Contains(x, StringComparer.OrdinalIgnoreCase));
 
-                foreach (var key in projectInfoEnumerator)
+                foreach (var key in keys)
                 {
                     var value = projectJson[key];
-                    if (value == null)
-                        Console.WriteLine(key + @": null");
-                    else
-                        Console.WriteLine(key + @": " + value.ToString());
+                    Console.WriteLine(value == null ? $"{key}: null" : $"{key}: {value}");
                 }
             }
 
-            if (_options.PrintEntries)
+            if (!o.PrintEntries)
+                return;
+
+            Console.WriteLine("Package entries:");
+
+            Core.Package.Package package;
+            using (var reader = new BinaryReader(file.Open(FileMode.Open, FileAccess.Read, FileShare.Read)))
+                package = _reader.ReadFrom(reader);
+
+            var entries = package.Entries;
+
+            if (o.Sort)
             {
-                Console.WriteLine("Package entries:");
-
-                Core.Package.Package package;
-                using (var reader = new BinaryReader(file.Open(FileMode.Open, FileAccess.Read, FileShare.Read)))
-                {
-                    package = _reader.ReadFrom(reader);
-                }
-
-                var entries = package.Entries;
-
-                if (_options.Sort)
-                {
-                    if (_options.SortBy == "extension")
-                        entries.Sort((a, b) =>
-                            String.Compare(a.FullPath, b.FullPath, StringComparison.OrdinalIgnoreCase));
-                    else if (_options.SortBy == "size")
-                        entries.Sort((a, b) => a.Length.CompareTo(b.Length));
-                    else
-                        entries.Sort((a, b) =>
-                            String.Compare(a.FullPath, b.FullPath, StringComparison.OrdinalIgnoreCase));
-                }
-
-                foreach (var entry in entries)
-                {
-                    Console.WriteLine(@"* " + entry.FullPath + $@" - {entry.Length} bytes");
-                }
+                entries.Sort(o.SortBy == "size"
+                    ? (a, b) => a.Length.CompareTo(b.Length)
+                    : (a, b) => String.Compare(a.FullPath, b.FullPath, StringComparison.OrdinalIgnoreCase));
             }
+
+            foreach (var entry in entries)
+                Console.WriteLine($"* {entry.FullPath} - {entry.Length} bytes");
         }
 
-        private static void InfoTex(FileInfo file)
+        private static void InfoTex(InfoOptions o, FileInfo file)
         {
         }
 
@@ -162,48 +129,53 @@ namespace RePKG.Command
             return JsonNode.Parse(File.ReadAllText(projectJson[0].FullName));
         }
 
-        private static bool MatchesFilter(JsonNode? project)
+        private static bool MatchesFilter(InfoOptions o, JsonNode? project)
         {
-            if (project == null)
+            if (project == null || string.IsNullOrEmpty(o.TitleFilter))
                 return true;
 
-            if (!string.IsNullOrEmpty(_options.TitleFilter))
-            {
-                var titleNode = project["title"];
-                if (titleNode != null)
-                {
-                    var title = titleNode.GetValue<string>();
-                    if (!title.Contains(_options.TitleFilter, StringComparison.OrdinalIgnoreCase))
-                        return false;
-                }
-            }
+            var title = project["title"]?.GetValue<string>();
+            return title == null || title.Contains(o.TitleFilter, StringComparison.OrdinalIgnoreCase);
+        }
 
-            return true;
+        public static Command BuildCommand()
+        {
+            var inputArg  = new Argument<string>("input") { Description = "Path to file/directory" };
+            var sortOpt   = new Option<bool>("--sort", ["-s"]) { Description = "Sort entries a-z" };
+            var sortByOpt = new Option<string>("--sortby", ["-b"]) { Description = "Sort by name/extension/size", DefaultValueFactory = _ => "name" };
+            var texOpt    = new Option<bool>("--tex", ["-t"]) { Description = "Dump info about all tex files from specified directory" };
+            var projOpt   = new Option<string?>("--projectinfo", ["-p"]) { Description = "Keys from project.json (comma-separated, * for all)" };
+            var printOpt  = new Option<bool>("--printentries", ["-e"]) { Description = "Print entries in packages" };
+            var filterOpt = new Option<string?>("--title-filter") { Description = "Title filter" };
+
+            var cmd = new Command("info", "Dumps PKG/TEX info");
+            cmd.Add(inputArg);
+            cmd.Add(sortOpt); cmd.Add(sortByOpt); cmd.Add(texOpt);
+            cmd.Add(projOpt); cmd.Add(printOpt);  cmd.Add(filterOpt);
+
+            cmd.SetAction((ParseResult pr) => Action(new InfoOptions
+            {
+                Input        = pr.GetValue(inputArg)!,
+                Sort         = pr.GetValue(sortOpt),
+                SortBy       = pr.GetValue(sortByOpt)!,
+                TexDirectory = pr.GetValue(texOpt),
+                ProjectInfo  = pr.GetValue(projOpt),
+                PrintEntries = pr.GetValue(printOpt),
+                TitleFilter  = pr.GetValue(filterOpt),
+            }));
+
+            return cmd;
         }
     }
 
-    [Verb("info", HelpText = "Dumps PKG/TEX info.")]
     public class InfoOptions
     {
-        [Value(0, Required = true, HelpText = "Path to file which you want to get info about", MetaName = "Input file")]
-        public string Input { get; set; }
-
-        [Option('s', "sort", HelpText = "Sort entries a-z", Default = false)]
+        public string Input { get; set; } = string.Empty;
         public bool Sort { get; set; }
-
-        [Option('b', "sortby", HelpText = "Sort by ... (available options: name, extension, size)", Default = "name")]
-        public string SortBy { get; set; }
-
-        [Option('t', "tex", HelpText = "Dump info about all tex files from specified directory")]
+        public string SortBy { get; set; } = "name";
         public bool TexDirectory { get; set; }
-
-        [Option('p', "projectinfo", HelpText = "Keys to dump from project.json (delimit using comma) (* for all)")]
-        public string ProjectInfo { get; set; }
-
-        [Option('e', "printentries", HelpText = "Print entries in packages")]
+        public string? ProjectInfo { get; set; }
         public bool PrintEntries { get; set; }
-
-        [Option("title-filter", HelpText = "Title filter")]
-        public string TitleFilter { get; set; }
+        public string? TitleFilter { get; set; }
     }
 }

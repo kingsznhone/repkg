@@ -14,7 +14,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="CommandLineParser" Version="2.9.1" />
+        <PackageReference Include="System.CommandLine" Version="3.0.0-preview.3.26207.106" />
     </ItemGroup>
 
     <ItemGroup>
