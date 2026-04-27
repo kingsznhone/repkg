@@ -122,11 +122,7 @@ namespace RePKG.Core.Texture
             }
 
             var bytes = new byte[byteCount];
-            var bytesRead = reader.Read(bytes, 0, byteCount);
-
-            if (bytesRead != byteCount)
-                throw new Exception("Failed to read bytes from stream while reading mipmap");
-
+            reader.BaseStream.ReadExactly(bytes);
             return bytes;
         }
 

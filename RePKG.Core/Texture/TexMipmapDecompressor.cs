@@ -40,11 +40,7 @@ namespace RePKG.Core.Texture
         private byte[] Lz4Decompress(byte[] bytes, int knownLength)
         {
             var buffer = new byte[knownLength];
-
-            LZ4Codec.Decode(
-                bytes, 0, bytes.Length,
-                buffer, 0, buffer.Length);
-
+            LZ4Codec.Decode(bytes.AsSpan(), buffer.AsSpan());
             return buffer;
         }
     }
