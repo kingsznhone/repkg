@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.CommandLine;
-using System.IO;
-using System.Linq;
-using System.Text.Json.Nodes;
-using RePKG.Core.Package;
+﻿using RePKG.Core.Package;
 using RePKG.Core.Package.Interfaces;
+using System.CommandLine;
+using System.Text.Json.Nodes;
 
 namespace RePKG.Commands
 {
@@ -140,28 +136,28 @@ namespace RePKG.Commands
 
         public static Command BuildCommand()
         {
-            var inputArg  = new Argument<string>("input") { Description = "Path to file/directory" };
-            var sortOpt   = new Option<bool>("--sort", ["-s"]) { Description = "Sort entries a-z" };
+            var inputArg = new Argument<string>("input") { Description = "Path to file/directory" };
+            var sortOpt = new Option<bool>("--sort", ["-s"]) { Description = "Sort entries a-z" };
             var sortByOpt = new Option<string>("--sortby", ["-b"]) { Description = "Sort by name/extension/size", DefaultValueFactory = _ => "name" };
-            var texOpt    = new Option<bool>("--tex", ["-t"]) { Description = "Dump info about all tex files from specified directory" };
-            var projOpt   = new Option<string?>("--projectinfo", ["-p"]) { Description = "Keys from project.json (comma-separated, * for all)" };
-            var printOpt  = new Option<bool>("--printentries", ["-e"]) { Description = "Print entries in packages" };
+            var texOpt = new Option<bool>("--tex", ["-t"]) { Description = "Dump info about all tex files from specified directory" };
+            var projOpt = new Option<string?>("--projectinfo", ["-p"]) { Description = "Keys from project.json (comma-separated, * for all)" };
+            var printOpt = new Option<bool>("--printentries", ["-e"]) { Description = "Print entries in packages" };
             var filterOpt = new Option<string?>("--title-filter") { Description = "Title filter" };
 
             var cmd = new Command("info", "Dumps PKG/TEX info");
             cmd.Add(inputArg);
             cmd.Add(sortOpt); cmd.Add(sortByOpt); cmd.Add(texOpt);
-            cmd.Add(projOpt); cmd.Add(printOpt);  cmd.Add(filterOpt);
+            cmd.Add(projOpt); cmd.Add(printOpt); cmd.Add(filterOpt);
 
             cmd.SetAction((ParseResult pr) => Action(new InfoOptions
             {
-                Input        = pr.GetValue(inputArg)!,
-                Sort         = pr.GetValue(sortOpt),
-                SortBy       = pr.GetValue(sortByOpt)!,
+                Input = pr.GetValue(inputArg)!,
+                Sort = pr.GetValue(sortOpt),
+                SortBy = pr.GetValue(sortByOpt)!,
                 TexDirectory = pr.GetValue(texOpt),
-                ProjectInfo  = pr.GetValue(projOpt),
+                ProjectInfo = pr.GetValue(projOpt),
                 PrintEntries = pr.GetValue(printOpt),
-                TitleFilter  = pr.GetValue(filterOpt),
+                TitleFilter = pr.GetValue(filterOpt),
             }));
 
             return cmd;

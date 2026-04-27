@@ -1,6 +1,4 @@
-using System;
 using K4os.Compression.LZ4;
-using RePKG.Core.Texture;
 
 namespace RePKG.Core.Texture
 {
@@ -16,7 +14,7 @@ namespace RePKG.Core.Texture
 
             if (targetCompressFormat != mipmap.Format)
                 throw new NotSupportedException("Changing mipmap format is not yet supported");
-            
+
             if (lz4Compress) LZ4Compress(mipmap);
         }
 
@@ -29,10 +27,10 @@ namespace RePKG.Core.Texture
             var compressedSize = LZ4Codec.Encode(
                 bytes, 0, bytes.Length,
                 buffer, 0, buffer.Length);
-            
+
             if (compressedSize < maximumSize)
                 Array.Resize(ref buffer, compressedSize);
-            
+
             mipmap.DecompressedBytesCount = bytes.Length;
             mipmap.Bytes = buffer;
             mipmap.IsLZ4Compressed = true;

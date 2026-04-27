@@ -1,12 +1,9 @@
-using System;
-using System.IO;
-using System.Text;
 using RePKG.Core.Texture.Helpers;
-using RePKG.Core.Texture;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Text;
 
 namespace RePKG.Core.Texture
 {
@@ -18,7 +15,7 @@ namespace RePKG.Core.Texture
 
             if (tex.IsGif)
                 return ConvertToGif(tex);
-            
+
             var sourceMipmap = tex.FirstImage.FirstMipmap;
 
             if (tex.IsVideoTexture)
@@ -36,7 +33,7 @@ namespace RePKG.Core.Texture
                 {
                     throw new InvalidOperationException("Expected mp4 magic header");
                 }
-                
+
                 return new ImageResult
                 {
                     Bytes = sourceMipmap.Bytes,
@@ -104,7 +101,7 @@ namespace RePKG.Core.Texture
             var image = ImageFromRawFormat(frameFormat, null,
                 tex.FrameInfoContainer.GifWidth,
                 tex.FrameInfoContainer.GifHeight);
-            
+
             var sequenceImages = new Image[tex.ImagesContainer.Images.Count];
 
             for (var i = 0; i < sequenceImages.Length; i++)
@@ -128,14 +125,14 @@ namespace RePKG.Core.Texture
 
                 var frame = sequenceImages[frameInfo.ImageId].Clone(
                     context => context.Crop(new Rectangle(
-                        (int) x,
-                        (int) y,
-                        (int) Math.Abs(width),
-                        (int) Math.Abs(height))
-                    ).Rotate((float) Math.Round(rotationAngle * 180 / Math.PI)));
+                        (int)x,
+                        (int)y,
+                        (int)Math.Abs(width),
+                        (int)Math.Abs(height))
+                    ).Rotate((float)Math.Round(rotationAngle * 180 / Math.PI)));
 
                 var metadata = frame.Frames.RootFrame.Metadata.GetFormatMetadata(GifFormat.Instance);
-                metadata.FrameDelay = (int) Math.Round(frameInfo.Frametime * 100.0f);
+                metadata.FrameDelay = (int)Math.Round(frameInfo.Frametime * 100.0f);
 
                 image.Frames.AddFrame(frame.Frames[0]);
             }
@@ -145,7 +142,7 @@ namespace RePKG.Core.Texture
 
             using (var memoryStream = new MemoryStream())
             {
-                image.SaveAsGif(memoryStream, new GifEncoder {ColorTableMode = GifColorTableMode.Local});
+                image.SaveAsGif(memoryStream, new GifEncoder { ColorTableMode = GifColorTableMode.Local });
 
                 return new ImageResult
                 {

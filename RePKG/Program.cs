@@ -13,9 +13,11 @@ namespace RePKG
         {
             Console.CancelKeyPress += Cancel;
 
-            var root = new RootCommand("RePKG - Wallpaper Engine package tool");
-            root.Add(Extract.BuildCommand());
-            root.Add(Info.BuildCommand());
+            var root = new RootCommand("RePKG - Wallpaper Engine package tool")
+            {
+                Extract.BuildCommand(),
+                Info.BuildCommand()
+            };
             root.Action = new HelpAction();
             return root.Parse(args).Invoke();
         }

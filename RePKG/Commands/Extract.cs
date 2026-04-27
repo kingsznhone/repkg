@@ -15,11 +15,11 @@ namespace RePKG.Commands
 {
     public static class Extract
     {
-        private static readonly string[] ProjectFiles = { "project.json" };
+        private static readonly string[] ProjectFiles = ["project.json"];
         private static readonly ITexReader _texReader = TexReader.Default;
         private static readonly ITexJsonInfoGenerator _texJsonInfoGenerator = new TexJsonInfoGenerator();
         private static readonly IPackageReader _packageReader = new PackageReader();
-        private static readonly TexToImageConverter _texToImageConverter = new TexToImageConverter();
+        private static readonly TexToImageConverter _texToImageConverter = new();
 
         public static void Action(ExtractOptions o)
         {
@@ -91,7 +91,7 @@ namespace RePKG.Commands
                     if (file.Directory == null || file.Directory.FullName.Length < rootLen)
                         ExtractPkg(o, file);
                     else
-                        ExtractPkg(o, file, true, file.Directory.FullName.Substring(rootLen));
+                        ExtractPkg(o, file, true, file.Directory.FullName[rootLen..]);
                 }
                 return;
             }
@@ -99,7 +99,7 @@ namespace RePKG.Commands
             foreach (var directory in directoryInfo.EnumerateDirectories())
             {
                 foreach (var file in directory.EnumerateFiles("*.pkg"))
-                    ExtractPkg(o, file, true, directory.FullName.Substring(rootLen));
+                    ExtractPkg(o, file, true, directory.FullName[rootLen..]);
             }
         }
 
@@ -309,6 +309,8 @@ namespace RePKG.Commands
 
         private static string[] NormalizeExtensions(string[] array)
         {
+            ArgumentNullException.ThrowIfNull(array);
+
             for (int i = 0; i < array.Length; i++)
                 if (!array[i].StartsWith("."))
                     array[i] = '.' + array[i];
@@ -329,14 +331,22 @@ namespace RePKG.Commands
             var noTexOpt  = new Option<bool>("--no-tex-convert") { Description = "Don't convert TEX files into images while extracting PKG" };
             var overOpt   = new Option<bool>("--overwrite") { Description = "Overwrite all existing files" };
 
-            var cmd = new Command("extract", "Extract PKG / Convert TEX into image");
-            cmd.Add(inputArg);
-            cmd.Add(outputOpt); cmd.Add(ignoreOpt); cmd.Add(onlyOpt);
-            cmd.Add(texOpt);    cmd.Add(sdirOpt);   cmd.Add(recurOpt);
-            cmd.Add(copyOpt);   cmd.Add(nameOpt);   cmd.Add(noTexOpt);
-            cmd.Add(overOpt);
+            var cmd = new Command("extract", "Extract PKG / Convert TEX into image")
+            {
+                inputArg,
+                outputOpt,
+                ignoreOpt,
+                onlyOpt,
+                texOpt,
+                sdirOpt,
+                recurOpt,
+                copyOpt,
+                nameOpt,
+                noTexOpt,
+                overOpt
+            };
 
-            cmd.SetAction((ParseResult pr) => Action(new ExtractOptions
+            cmd.SetAction(pr => Action(new ExtractOptions
             {
                 Input           = pr.GetValue(inputArg)!,
                 OutputDirectory = pr.GetValue(outputOpt) ?? "./output",

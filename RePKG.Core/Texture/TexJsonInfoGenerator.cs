@@ -1,7 +1,5 @@
-using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using RePKG.Core.Texture;
 
 namespace RePKG.Core.Texture
 {
@@ -26,7 +24,7 @@ namespace RePKG.Core.Texture
             {
                 if (tex.FrameInfoContainer == null)
                     throw new InvalidOperationException("TEX is animated but doesn't have frame info container");
-                
+
                 json["spritesheetsequences"] = new JsonArray
                 {
                     new JsonObject

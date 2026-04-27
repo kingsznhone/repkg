@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using RePKG.Core.Exceptions;
-using RePKG.Core.Texture;
 
 namespace RePKG.Core.Texture
 {

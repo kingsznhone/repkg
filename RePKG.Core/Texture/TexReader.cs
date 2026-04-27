@@ -37,7 +37,7 @@ namespace RePKG.Core.Texture
 
         public ITex ReadFrom(BinaryReader reader)
         {
-            if (reader == null) throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
 
             var tex = new Tex {Magic1 = reader.ReadNString(maxLength: 16)};
 

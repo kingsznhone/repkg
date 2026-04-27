@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using RePKG.Core.Texture;
-
 namespace RePKG.Core.Texture
 {
     public class TexImageWriter : ITexImageWriter
@@ -32,7 +28,7 @@ namespace RePKG.Core.Texture
 
             using (var stream = mipmap.GetBytesStream())
             {
-                writer.Write((int) stream.Length);
+                writer.Write((int)stream.Length);
                 writer.Flush();
                 stream.CopyTo(writer.BaseStream);
             }
@@ -47,7 +43,7 @@ namespace RePKG.Core.Texture
 
             using (var stream = mipmap.GetBytesStream())
             {
-                writer.Write((int) stream.Length);
+                writer.Write((int)stream.Length);
                 writer.Flush();
                 stream.CopyTo(writer.BaseStream);
             }

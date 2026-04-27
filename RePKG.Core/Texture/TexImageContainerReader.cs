@@ -16,7 +16,7 @@ namespace RePKG.Core.Texture
 
         public ITexImageContainer ReadFrom(BinaryReader reader, TexFormat texFormat)
         {
-            if (reader == null) throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
 
             if (!texFormat.IsValid())
                 throw new EnumNotValidException<TexFormat>(texFormat);
@@ -56,7 +56,7 @@ namespace RePKG.Core.Texture
                     throw new UnknownMagicException(nameof(TexImageContainerReader), container.Magic);
             }
 
-            int version = Convert.ToInt32(container.Magic.Substring(4));
+            int version = Convert.ToInt32(container.Magic[4..]);
             container.ImageContainerVersion = (TexImageContainerVersion)version;
 
             if(container.ImageContainerVersion == TexImageContainerVersion.Version4

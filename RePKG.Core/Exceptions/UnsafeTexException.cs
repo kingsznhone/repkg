@@ -1,5 +1,3 @@
-using System;
-
 namespace RePKG.Core.Exceptions
 {
     /// <summary>
@@ -9,6 +7,6 @@ namespace RePKG.Core.Exceptions
     public class UnsafeTexException : Exception
     {
         public UnsafeTexException(string reason) : base($"Unsafe TEX detected, reason: {reason}")
-        {}
+        { }
     }
 }

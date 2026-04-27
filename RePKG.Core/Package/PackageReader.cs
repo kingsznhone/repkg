@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using RePKG.Core.Package;
 using RePKG.Core.Package.Interfaces;
 
 namespace RePKG.Core.Package
@@ -13,7 +9,7 @@ namespace RePKG.Core.Package
         public Core.Package.Package ReadFrom(BinaryReader reader)
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader));
-            
+
             var packageStart = reader.BaseStream.Position;
             var package = new Core.Package.Package
             {
@@ -22,8 +18,8 @@ namespace RePKG.Core.Package
 
             ReadEntries(package.Entries, reader);
 
-            var dataStart = (int) reader.BaseStream.Position;
-            package.HeaderSize = (int) (dataStart - packageStart);
+            var dataStart = (int)reader.BaseStream.Position;
+            package.HeaderSize = (int)(dataStart - packageStart);
 
             if (!ReadEntryBytes)
                 return package;

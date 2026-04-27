@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using RePKG.Core.Exceptions;
-using RePKG.Core.Texture;
 
 namespace RePKG.Core.Texture
 {
@@ -40,12 +37,12 @@ namespace RePKG.Core.Texture
             {
                 writer.Write(frame.ImageId);
                 writer.Write(frame.Frametime);
-                writer.Write((int) frame.X);
-                writer.Write((int) frame.Y);
-                writer.Write((int) frame.Width);
-                writer.Write((int) frame.WidthY);
-                writer.Write((int) frame.HeightX);
-                writer.Write((int) frame.Height);
+                writer.Write((int)frame.X);
+                writer.Write((int)frame.Y);
+                writer.Write((int)frame.Width);
+                writer.Write((int)frame.WidthY);
+                writer.Write((int)frame.HeightX);
+                writer.Write((int)frame.Height);
             }
         }
 

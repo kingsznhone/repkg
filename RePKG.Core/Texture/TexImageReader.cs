@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using RePKG.Core.Exceptions;
-using RePKG.Core.Texture;
+using RePKG.Core.Texture.Interfaces;
 
 namespace RePKG.Core.Texture
 {
@@ -21,8 +21,8 @@ namespace RePKG.Core.Texture
             ITexImageContainer container,
             TexFormat texFormat)
         {
-            if (reader == null) throw new ArgumentNullException(nameof(reader));
-            if (container == null) throw new ArgumentNullException(nameof(container));
+            ArgumentNullException.ThrowIfNull(reader);
+            ArgumentNullException.ThrowIfNull(container);
             
             if (!texFormat.IsValid())
                 throw new EnumNotValidException<TexFormat>(texFormat);
@@ -128,21 +128,14 @@ namespace RePKG.Core.Texture
 
         private Func<BinaryReader, TexMipmap> PickMipmapReader(TexImageContainerVersion containerVersion)
         {
-            switch (containerVersion)
+            return containerVersion switch
             {
-                case TexImageContainerVersion.Version1:
-                    return ReadMipmapV1;
-
-                case TexImageContainerVersion.Version2:
-                case TexImageContainerVersion.Version3:
-                    return ReadMipmapV2And3;
-                    
-                case TexImageContainerVersion.Version4:
-                    return ReadMipmapV4;
-                default:
-                    throw new InvalidOperationException(
-                        $"Tex image container version: {containerVersion} is not supported!");
-            }
+                TexImageContainerVersion.Version1 => ReadMipmapV1,
+                TexImageContainerVersion.Version2 or TexImageContainerVersion.Version3 => ReadMipmapV2And3,
+                TexImageContainerVersion.Version4 => ReadMipmapV4,
+                _ => throw new InvalidOperationException(
+                                        $"Tex image container version: {containerVersion} is not supported!"),
+            };
         }
     }
 }

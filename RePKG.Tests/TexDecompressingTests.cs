@@ -1,8 +1,6 @@
-using System;
-using System.IO;
-using System.Text;
 using NUnit.Framework;
 using RePKG.Core.Texture;
+using System.Text;
 
 namespace RePKG.Tests
 {
@@ -70,9 +68,9 @@ namespace RePKG.Tests
         private void ConvertToImageAndSave(ITex tex, string name)
         {
             var resultImage = _texToImageConverter.ConvertToImage(tex);
-            
+
             var path = $"{TestHelper.BasePath}\\{OutputDirectoryName}\\{name}.{resultImage.Format.GetFileExtension()}";
-            
+
             File.WriteAllBytes(path, resultImage.Bytes);
         }
 

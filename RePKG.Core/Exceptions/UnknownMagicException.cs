@@ -1,5 +1,3 @@
-using System;
-
 namespace RePKG.Core.Exceptions
 {
     /// <summary>
@@ -11,7 +9,7 @@ namespace RePKG.Core.Exceptions
             $"Unknown magic: '{magic}' in '{source}'")
         {
         }
-        
+
         public UnknownMagicException(string source, string property, string magic) : base(
             $"Unknown magic: '{magic}' in '{source}:{property}'")
         {

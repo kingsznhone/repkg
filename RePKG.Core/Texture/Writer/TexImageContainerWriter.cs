@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using RePKG.Core.Exceptions;
-using RePKG.Core.Texture;
 
 namespace RePKG.Core.Texture
 {
@@ -18,7 +15,7 @@ namespace RePKG.Core.Texture
         {
             if (writer == null) throw new ArgumentNullException(nameof(writer));
             if (imageContainer == null) throw new ArgumentNullException(nameof(imageContainer));
-            
+
             writer.WriteNString(imageContainer.Magic);
             writer.Write(imageContainer.Images.Count);
 
@@ -29,13 +26,13 @@ namespace RePKG.Core.Texture
                     break;
 
                 case TexImageContainerVersion.Version3:
-                    writer.Write((int) imageContainer.ImageFormat);
+                    writer.Write((int)imageContainer.ImageFormat);
                     break;
 
                 default:
                     throw new UnknownMagicException(nameof(TexImageContainerWriter), imageContainer.Magic);
             }
-            
+
             foreach (var image in imageContainer.Images)
             {
                 _texImageWriter.WriteTo(writer, imageContainer.ImageContainerVersion, image);

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using RePKG.Core.Package;
 using RePKG.Core.Package.Interfaces;
 
 namespace RePKG.Core.Package
@@ -15,7 +11,7 @@ namespace RePKG.Core.Package
 
             if (package.Entries.Count == 0)
                 throw new Exception("Package entries is empty");
-            
+
             writer.WriteStringI32Size(package.Magic);
             WriteEntriesHeader(package.Entries, writer);
             WriteBody(package.Entries, writer);

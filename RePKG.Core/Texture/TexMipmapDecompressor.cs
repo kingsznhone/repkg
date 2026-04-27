@@ -1,7 +1,7 @@
 using System;
 using K4os.Compression.LZ4;
 using RePKG.Core.Texture.Helpers;
-using RePKG.Core.Texture;
+using RePKG.Core.Texture.Interfaces;
 
 namespace RePKG.Core.Texture
 {
@@ -9,7 +9,7 @@ namespace RePKG.Core.Texture
     {
         public void DecompressMipmap(ITexMipmap mipmap)
         {
-            if (mipmap == null) throw new ArgumentNullException(nameof(mipmap));
+            ArgumentNullException.ThrowIfNull(mipmap);
 
             if (mipmap.IsLZ4Compressed)
             {
@@ -39,6 +39,8 @@ namespace RePKG.Core.Texture
 
         private byte[] Lz4Decompress(byte[] bytes, int knownLength)
         {
+            ArgumentNullException.ThrowIfNull(bytes);
+
             var buffer = new byte[knownLength];
             LZ4Codec.Decode(bytes.AsSpan(), buffer.AsSpan());
             return buffer;
